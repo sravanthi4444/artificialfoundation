@@ -1,0 +1,38 @@
+from sklearn.datasets import load_iris
+from sklearn.linear_model import LogisticRegression
+from sklearn.cluster import KMeans
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+import numpy as np
+iris = load_iris()
+X, y = iris.data, iris.target
+
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+clf = LogisticRegression(max_iter=200)
+clf.fit(X_train, y_train)
+y_pred = clf.predict(X_test)
+acc = accuracy_score(y_test, y_pred)
+
+
+kmeans = KMeans(n_clusters=3, random_state=42)
+clusters = kmeans.fit_predict(X)
+
+
+def map_clusters_to_labels(clusters, true_labels):
+    from scipy.stats import mode
+    labels = np.zeros_like(clusters)
+    for i in range(3):
+        mask = (clusters == i)
+        labels[mask] = mode(true_labels[mask])[0]
+    return labels
+
+mapped_labels = map_clusters_to_labels(clusters, y)
+unsup_acc = accuracy_score(y, mapped_labels)
+
+print(f"Supervised Learning Accuracy: {acc * 100:.2f}%")
+print(f"Unsupervised Learning (KMeans) Accuracy: {unsup_acc * 100:.2f}%")
+
+OUTPUT:
+Supervised Learning Accuracy: 97.78%
+Unsupervised Learning (KMeans) Accuracy: 89.33%

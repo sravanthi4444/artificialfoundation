@@ -1,0 +1,73 @@
+# ============================
+# Edunet-AICTE Internship Project
+# Foundations of AI - 4 Weeks in One Script
+# ============================
+
+print("\n📘 Week 1: Intro to AI, ML, DL - Logistic Regression on Iris Dataset")
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+
+iris = load_iris()
+X, y = iris.data, iris.target
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+model = LogisticRegression(max_iter=200)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+print(f"✅ Logistic Regression Accuracy: {accuracy * 100:.2f}%")
+
+
+
+print("\n📘 Week 2: Supervised vs Unsupervised Learning")
+from sklearn.cluster import KMeans
+import numpy as np
+
+kmeans = KMeans(n_clusters=3, random_state=42)
+clusters = kmeans.fit_predict(X)
+
+
+from scipy.stats import mode
+labels = np.zeros_like(clusters)
+for i in range(3):
+    mask = (clusters == i)
+    labels[mask] = mode(y[mask])[0]
+
+unsup_accuracy = accuracy_score(y, labels)
+print(f"✅ KMeans Clustering Accuracy (mapped to labels): {unsup_accuracy * 100:.2f}%")
+
+
+
+print("\n📘 Week 3: Image Classification using Neural Networks (MNIST)")
+from tensorflow.keras.datasets import mnist
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Flatten
+from tensorflow.keras.utils import to_categorical
+
+(X_train, y_train), (X_test, y_test) = mnist.load_data()
+X_train, X_test = X_train / 255.0, X_test / 255.0
+y_train_cat = to_categorical(y_train)
+y_test_cat = to_categorical(y_test)
+
+model = Sequential([
+    Flatten(input_shape=(28, 28)),
+    Dense(128, activation='relu'),
+    Dense(10, activation='softmax')
+])
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+model.fit(X_train, y_train_cat, epochs=3, batch_size=64, verbose=0)
+loss, acc = model.evaluate(X_test, y_test_cat, verbose=0)
+print(f"✅ MNIST Image Classification Accuracy: {acc * 100:.2f}%")
+
+print("\n📘 Week 4: Deep Learning Binary Classifier (Project Demo)")
+X_bin = np.random.rand(1000, 10)
+y_bin = (np.sum(X_bin, axis=1) > 5).astype(int)
+
+model_bin = Sequential([
+    Dense(64, input_dim=10, activation='relu'),
+    Dense(1, activation='sigmoid')
+])
+model_bin.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+model_bin.fit(X_bin, y_bin, epochs=5, batch_size=32, verbose=0)
+loss_bin, acc_bin =
